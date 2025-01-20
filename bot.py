@@ -3,6 +3,7 @@ from discord.ext import commands
 import config
 import asyncpg
 
+
 exts = ["cogs.dev", "cogs.welcome"]
 
 
@@ -16,8 +17,9 @@ class WelcomeBot(commands.Bot):
                 config.DB_CONFIG, min_size=4, max_size=5
             )
             print("Connected to database.")
+
         except Exception as e:
-            print("Failed to connext to database. {0}".format(e))
+            print("Failed to connect to database. {0}".format(e))
 
         with open("schema.sql") as f:
             await self.db.execute(f.read())
@@ -26,6 +28,7 @@ class WelcomeBot(commands.Bot):
 
         for ext in exts:
             await self.load_extension(ext)
+
         print("Loaded all cogs.")
 
     async def on_ready(self):

@@ -23,7 +23,6 @@ class WelcomeCmds(commands.Cog):
             interaction.guild.id,
             channel.id,
         )
-
         await interaction.response.send_message(
             f"Set welcome channel to {channel.mention}"
         )
@@ -36,7 +35,7 @@ class WelcomeCmds(commands.Cog):
         )
         if not check:
             return await interaction.response.send_message(
-                "Please set the welcome channel first"
+                "Please set a welcome channel first!"
             )
 
         await self.bot.db.execute(
@@ -50,14 +49,13 @@ class WelcomeCmds(commands.Cog):
     @app_commands.checks.has_permissions(manage_guild=True)
     async def test(self, interaction: discord.Interaction, user: discord.Member):
         self.bot.dispatch("member_join", user)
-        return await interaction.response.send_message("Tested the welcome message")
+        return await interaction.response.send_message("Sent test message!")
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         record = await self.bot.db.fetchrow(
             "SELECT * FROM welcome WHERE guild_id = $1", member.guild.id
         )
-
         if not record:
             return
 
@@ -66,13 +64,9 @@ class WelcomeCmds(commands.Cog):
 
         welcome_card = await get_welcome_card(member)
 
-        if welcome_card is None:
-            await channel.send("Failed to generate welcome card.")
-            return
-
         await channel.send(
             message.format(user=member, guild=member.guild.name),
-            file=discord.File(welcome_card, "welcome.png"),
+            file=discord.File(welcome_card, filename="welcome.png"),
         )
 
 
